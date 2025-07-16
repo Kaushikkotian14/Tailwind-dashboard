@@ -1,4 +1,26 @@
+    
+    const toggleButton = document.getElementById('theme-toggle');
+    const htmlElement = document.documentElement;
 
+
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    htmlElement.setAttribute('data-theme', savedTheme);
+    updateThemeIcon(savedTheme);
+
+    toggleButton.addEventListener('click', () => {
+      const currentTheme = htmlElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      htmlElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      updateThemeIcon(newTheme);
+    });
+
+    function updateThemeIcon(theme) {
+      const iconElement = toggleButton.querySelector('i');
+      iconElement.className = `fa-solid fa-${theme === 'light' ? 'moon' : 'sun'} text-primary`;
+    }
+  
+  
   var options = {
     chart: {
       type: 'radialBar',
@@ -64,11 +86,24 @@ var lineChart = {
         data: [12, 18, 22, 20, 18, 23]
     }],
     xaxis: {
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
+        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        labels: {
+            style: {
+                colors: (document.documentElement.getAttribute('data-theme') === 'dark') ? '#fff' : '#000'
+            }
+        }
     },
     yaxis: {
         title: {
-            text: 'Revenue ($M)'
+            text: 'Revenue ($M)',
+            style: {
+                color: (document.documentElement.getAttribute('data-theme') === 'dark') ? '#fff' : '#000'
+            }
+        },
+        labels: {
+            style: {
+                colors: (document.documentElement.getAttribute('data-theme') === 'dark') ? '#fff' : '#000'
+            }
         }
     },
     stroke: {
@@ -77,7 +112,10 @@ var lineChart = {
     colors: ['#10B981', '#8B5CF6'],
     title: {
         text: 'Revenue',
-        align: 'center'
+        align: 'center',
+        style: {
+            color: (document.documentElement.getAttribute('data-theme') === 'dark') ? '#fff' : '#000'
+        }
     },
     tooltip: {
         enabled: false
@@ -85,3 +123,18 @@ var lineChart = {
 };
 var linegraph = new ApexCharts(document.querySelector("#revenue-chart"), lineChart);
 linegraph.render();
+
+
+toggleButton.addEventListener('click', () => {
+    setTimeout(() => {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        linegraph.updateOptions({
+            xaxis: { labels: { style: { colors: isDark ? '#fff' : '#000' } } },
+            yaxis: {
+                title: { style: { color: isDark ? '#fff' : '#000' } },
+                labels: { style: { colors: isDark ? '#fff' : '#000' } }
+            },
+            title: { style: { color: isDark ? '#fff' : '#000' } }
+        });
+    }, 10);
+});
